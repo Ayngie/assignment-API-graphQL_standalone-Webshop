@@ -1,0 +1,72 @@
+type Product {
+  id: ID!
+  name: String!
+  unitPrice: Float!
+}
+
+# type ShoppingCartItem {
+#     id: ID!
+#     item: Product
+# }
+
+type ShoppingCart {
+  id: ID!
+}
+
+# type ShoppingCart {
+#   id: ID!
+#   productsIds: [ID]!
+#   totalSum: Float!
+#   # items: [ShoppingCartItem]!
+# }
+type AddProductsToCartOutput {
+
+}
+
+type DeletedResourceResponse {
+  deletedId: ID
+  success: Boolean
+}
+
+type Query {
+  getProductById(productId: ID!): Product
+  getAllProducts: [Product]
+  getShoppingCartById(shoppingCartId: ID!): ShoppingCart
+  getAllShoppingCarts: [ShoppingCart]
+}
+
+type Mutation {
+  createProduct(name: String!, unitPrice: Float!): Product
+  updateProduct(id: ID!, name: String!, unitPrice: Float!): Product
+  deleteProduct(productId: ID!): DeletedResourceResponse
+
+  # createShoppingCartItem(input: CreateShoppingCartItem): ShoppingCartItem
+  # updateShoppingCartItem(id: ID!, input: CreateShoppingCartItem!): ShoppingCartItem
+  # deleteShoppincCartItem(shoppingCartItemId: ID!): DeletedResourceResponse
+
+  createNewShoppingCart: ShoppingCart
+  #   createShoppingCart(input: CreateShoppingCart!): ShoppingCart
+  #   updateShoppingCart(id: ID!, input: CreateShoppingCart!): ShoppingCart
+
+  deleteShoppingCart(shoppingCartId: ID!): DeletedResourceResponse
+
+  addProductsToCart(cartId: String!, cartItems: [cartItemInput!]!) {AddProductsToCartOutput}
+
+  }  
+ 
+input cartItemInput {
+    products: [Product]
+    totalSum: Float
+}
+
+# input CreateShoppingCartItem {
+#     id: ID!
+#     name: String!
+#     unitPrice: Float!
+# }
+
+# input CreateShoppingCart {
+#   productsIds: [ID]!
+#   totalSum: Float!
+#   # items: [ShoppingCartItem]!
+# }
