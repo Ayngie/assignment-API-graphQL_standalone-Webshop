@@ -1,16 +1,22 @@
 type Product {
   id: ID!
   name: String!
+  description: String #newly added
   unitPrice: Float!
 }
 
-# type ShoppingCartItem {
-#     id: ID!
-#     item: Product
-# }
+type CartItem {
+  id: ID!
+  item: Product
+  name: String!
+  price: Float!
+  quantity: Int!
+}
 
 type ShoppingCart {
   id: ID!
+  items: [CartItem]!
+  totalPrice: Float!
 }
 
 # type ShoppingCart {
@@ -19,9 +25,10 @@ type ShoppingCart {
 #   totalSum: Float!
 #   # items: [ShoppingCartItem]!
 # }
-type AddProductsToCartOutput {
 
-}
+# type AddProductsToCartOutput {
+
+# }
 
 type DeletedResourceResponse {
   deletedId: ID
@@ -31,12 +38,13 @@ type DeletedResourceResponse {
 type Query {
   getProductById(productId: ID!): Product
   getAllProducts: [Product]
+  # getCartItemById(itemID: ID!): CartItem
   getShoppingCartById(shoppingCartId: ID!): ShoppingCart
   getAllShoppingCarts: [ShoppingCart]
 }
 
 type Mutation {
-  createProduct(name: String!, unitPrice: Float!): Product
+  createProduct(name: String!, description: String, unitPrice: Float!): Product #added description: String ?
   updateProduct(id: ID!, name: String!, unitPrice: Float!): Product
   deleteProduct(productId: ID!): DeletedResourceResponse
 
@@ -48,16 +56,18 @@ type Mutation {
   #   createShoppingCart(input: CreateShoppingCart!): ShoppingCart
   #   updateShoppingCart(id: ID!, input: CreateShoppingCart!): ShoppingCart
 
+  addItemToCart(shoppingCartId: ID!, productId: ID!): ShoppingCart
+  removeItemfromCart(shoppingCartId: ID!, cartItemId: ID!): shoppingCart
+  # AddCartItem:(input: cartItemInput!): ShoppingCart
+  # addProductsToCart(cartId: String!, cartItems: [cartItemInput!]!) {AddProductsToCartOutput}
+
   deleteShoppingCart(shoppingCartId: ID!): DeletedResourceResponse
-
-  addProductsToCart(cartId: String!, cartItems: [cartItemInput!]!) {AddProductsToCartOutput}
-
-  }  
- 
-input cartItemInput {
-    products: [Product]
-    totalSum: Float
 }
+
+# input cartItemInput {
+#     products: [Product]
+#     totalSum: Float
+# }
 
 # input CreateShoppingCartItem {
 #     id: ID!
