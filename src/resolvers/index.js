@@ -303,7 +303,6 @@ exports.resolvers = {
         if (cartItem.id === productId) {
           cartItem.quantity++;
           itemInCartExists = true;
-          break;
         }
       }
 
