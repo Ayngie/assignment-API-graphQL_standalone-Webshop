@@ -1,34 +1,22 @@
 type Product {
   id: ID!
   name: String!
-  description: String #newly added
+  description: String
   unitPrice: Float!
 }
 
 type CartItem {
   id: ID!
-  item: Product
   name: String!
-  price: Float!
+  unitPrice: Float!
   quantity: Int!
 }
 
 type ShoppingCart {
   id: ID!
-  items: [CartItem]!
-  totalPrice: Float!
+  itemsInCart: [CartItem]
+  totalSum: Float!
 }
-
-# type ShoppingCart {
-#   id: ID!
-#   productsIds: [ID]!
-#   totalSum: Float!
-#   # items: [ShoppingCartItem]!
-# }
-
-# type AddProductsToCartOutput {
-
-# }
 
 type DeletedResourceResponse {
   deletedId: ID
@@ -38,45 +26,22 @@ type DeletedResourceResponse {
 type Query {
   getProductById(productId: ID!): Product
   getAllProducts: [Product]
-  # getCartItemById(itemID: ID!): CartItem
+
   getShoppingCartById(shoppingCartId: ID!): ShoppingCart
   getAllShoppingCarts: [ShoppingCart]
+
+  # getCartItemById(cartItemID: ID!): CartItem
 }
 
 type Mutation {
-  createProduct(name: String!, description: String, unitPrice: Float!): Product #added description: String ?
+  createProduct(name: String!, description: String, unitPrice: Float!): Product
   updateProduct(id: ID!, name: String!, unitPrice: Float!): Product
   deleteProduct(productId: ID!): DeletedResourceResponse
 
-  # createShoppingCartItem(input: CreateShoppingCartItem): ShoppingCartItem
-  # updateShoppingCartItem(id: ID!, input: CreateShoppingCartItem!): ShoppingCartItem
-  # deleteShoppincCartItem(shoppingCartItemId: ID!): DeletedResourceResponse
-
   createNewShoppingCart: ShoppingCart
-  #   createShoppingCart(input: CreateShoppingCart!): ShoppingCart
-  #   updateShoppingCart(id: ID!, input: CreateShoppingCart!): ShoppingCart
-
-  addItemToCart(shoppingCartId: ID!, productId: ID!): ShoppingCart
-  removeItemfromCart(shoppingCartId: ID!, cartItemId: ID!): shoppingCart
-  # AddCartItem:(input: cartItemInput!): ShoppingCart
-  # addProductsToCart(cartId: String!, cartItems: [cartItemInput!]!) {AddProductsToCartOutput}
-
   deleteShoppingCart(shoppingCartId: ID!): DeletedResourceResponse
+
+  addCartItem(shoppingCartId: ID!, productId: ID!): ShoppingCart
+  removeCartItem(shoppingCartId: ID!, cartItemId: ID!): ShoppingCart
+  emptyAllCartItems(shoppingCartId: ID!): ShoppingCart
 }
-
-# input cartItemInput {
-#     products: [Product]
-#     totalSum: Float
-# }
-
-# input CreateShoppingCartItem {
-#     id: ID!
-#     name: String!
-#     unitPrice: Float!
-# }
-
-# input CreateShoppingCart {
-#   productsIds: [ID]!
-#   totalSum: Float!
-#   # items: [ShoppingCartItem]!
-# }

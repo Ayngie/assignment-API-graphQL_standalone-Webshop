@@ -1,5 +1,4 @@
-// Enables Node to be able to read our .env variables
-require("dotenv").config();
+require("dotenv").config(); // Enables Node to be able to read our .env variables.
 const { ApolloServer } = require("@apollo/server");
 const { resolvers } = require("./resolvers");
 const { loadFiles } = require("@graphql-tools/load-files");

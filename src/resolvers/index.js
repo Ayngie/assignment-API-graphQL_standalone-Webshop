@@ -14,7 +14,6 @@ const axios = require("axios").default;
 
 /*------------------------------- global file paths -------------------------------*/
 
-// Create a variable holding the file path (from computer root directory) to the product file directory
 const productsDirectory = path.join(__dirname, "..", "data", "products");
 const shoppingCartsDirectory = path.join(
   __dirname,
@@ -22,7 +21,6 @@ const shoppingCartsDirectory = path.join(
   "data",
   "shoppingCarts"
 );
-// const cartItemsDirectory = path.join(__dirname, "..", "data", "cartItems");
 
 /*------------------------------- resolvers -------------------------------*/
 
@@ -81,54 +79,46 @@ exports.resolvers = {
     /*-------- shopping cart --------*/
 
     getShoppingCartById: async (_, args) => {
-      // Place the shoppingCartId the user sent in a variable called "shoppingCartId"
       const shoppingCartId = args.shoppingCartId;
-      // Create a variable holding the file path (from computer root directory) to the shoppingCart file we are looking for
       const shoppingCartFilePath = path.join(
         shoppingCartsDirectory,
         `${shoppingCartId}.json`
       );
 
-      // Check if the requested shoppingCart actually exists
+      // Check if shoppingCart exists
       const shoppingCartExists = await fileExists(shoppingCartFilePath);
-      // If shoppingCart does not exist return an error notifying the user of this
       if (!shoppingCartExists)
-        return new GraphQLError("That shopping cart does not exist");
+        return new GraphQLError(
+          "Sorry, that shoppingcart does not exist! Try again :)"
+        );
 
-      // Read the shoppingCart file; data will be returned as a JSON string
+      // Read and parse file
       const shoppingCartData = await fsPromises.readFile(shoppingCartFilePath, {
         encoding: "utf-8",
       });
-      // Parse the returned JSON shoppingCart data into a JS object
       const data = JSON.parse(shoppingCartData);
-      // Return the data
+
       return data;
     },
 
     getAllShoppingCarts: async (_) => {
-      // Get an array of file names that exist in the ShoppingCarts directory (aka a list of all the ShoppingCarts we have)
       const allShoppingCarts = await getDirectoryFileNames(
         shoppingCartsDirectory
       );
 
-      // Create a variable with an empty array to hold all ShoppingCarts data
       const allShoppingCartsData = [];
 
-      // For each file found in ShoppingCarts...
       for (const file of allShoppingCarts) {
-        // ... create the filepath for that specific file
-        const filePath = path.join(productsDirectory, file);
-        // Read the contents of the file; will return a JSON string of the ShoppingCarts data
+        const filePath = path.join(shoppingCartsDirectory, file);
+        // Read and parse file
         const fileContents = await fsPromises.readFile(filePath, {
           encoding: "utf-8",
         });
-        // Parse the JSON data from the previous step
         const data = JSON.parse(fileContents);
-        // Push the parsed data to the allShoppingCartsData array
+
         allShoppingCartsData.push(data);
       }
 
-      // Return the allShoppingCartsData array (which should now hold the data for all ShoppingCarts)
       return allShoppingCartsData;
     },
   },
@@ -139,87 +129,81 @@ exports.resolvers = {
     /*-------- product --------*/
 
     createProduct: async (_, args) => {
-      // Verify name: om strängen är tom, return:a en error
       if (args.name.length === 0)
         return new GraphQLError("Name must be at least 1 character long");
 
-      // Skapa ett unikt id + data objektet
       const newProduct = {
-        // Generera ett random id (av typ UUID)
         id: crypto.randomUUID(),
         name: args.name,
+        description: args.description || "",
         unitPrice: args.unitPrice,
       };
 
-      // Skapa filePath för där vi ska skapa våran fil
-      let filePath = path.join(productsDirectory, `${newProduct.id}.json`);
+      let productFilePath = path.join(
+        productsDirectory,
+        `${newProduct.id}.json`
+      );
 
-      // Kolla att vårat auto-genererade productId inte har använts förut
+      // Check so id/file is unique
       let idExists = true;
       while (idExists) {
-        const exists = await fileExists(filePath); // kolla om filen existerar
+        const exists = await fileExists(productFilePath);
         console.log(exists, newProduct.id);
-        // om filen redan existerar generera ett nytt productId och uppdatera filePath
+        // if id/file already exists:
         if (exists) {
           newProduct.id = crypto.randomUUID();
-          filePath = path.join(productsDirectory, `${newProduct.id}.json`);
+          productFilePath = path.join(
+            productsDirectory,
+            `${newProduct.id}.json`
+          );
         }
-        // uppdatera idExists (för att undvika infinite loops)
+        // break loop
         idExists = exists;
       }
 
-      // Skapa en fil för produkten i /data/products
-      await fsPromises.writeFile(filePath, JSON.stringify(newProduct));
+      // create file
+      await fsPromises.writeFile(productFilePath, JSON.stringify(newProduct));
 
-      // Return:a våran respons; vårat nyskapade produkt
       return newProduct;
     },
 
     updateProduct: async (_, args) => {
-      // Hämta alla parametrar från args
-      /* const productId = args.id
-			const productName = args.name
-			const productUnitPrice = args.unitPrice */
+      const { id, name, description, unitPrice } = args;
+      const productFilePath = path.join(productsDirectory, `${id}.json`);
 
-      const { id, name, unitPrice } = args;
-
-      // Skapa våran filePath
-      const filePath = path.join(productsDirectory, `${id}.json`);
-
-      // Finns det produkt som de vill ändra?
-      // IF (no) return Not Found Error
-      const productExists = await fileExists(filePath);
+      const productExists = await fileExists(productFilePath);
       if (!productExists)
-        return new GraphQLError("That product does not exist");
+        return new GraphQLError(
+          "Sorry, there's been a mistake - that product does not exist."
+        );
 
-      // Skapa updatedProduct objekt
       const updatedProduct = {
         id,
         name,
+        description,
         unitPrice,
       };
 
-      // Skriv över den gamla filen med nya infon
-      await fsPromises.writeFile(filePath, JSON.stringify(updatedProduct));
+      await fsPromises.writeFile(
+        productFilePath,
+        JSON.stringify(updatedProduct)
+      );
 
-      // return updatedProduct
       return updatedProduct;
     },
 
     deleteProduct: async (_, args) => {
-      // get product id
       const productId = args.productId;
+      const productFilePath = path.join(productsDirectory, `${productId}.json`);
 
-      const filePath = path.join(productsDirectory, `${productId}.json`);
-      // does this product exist?
-      // If no (return error)
-      const productExists = await fileExists(filePath);
+      // Check product exists
+      const productExists = await fileExists(productFilePath);
       if (!productExists)
         return new GraphQLError("That product does not exist");
 
       // delete file
       try {
-        await deleteFile(filePath);
+        await deleteFile(productFilePath);
       } catch (error) {
         return {
           deletedId: productId,
@@ -236,85 +220,216 @@ exports.resolvers = {
     /*-------- shopping cart --------*/
 
     createNewShoppingCart: async (_, args) => {
-      // Verify name: om strängen är tom, return:a en error
-      // if (args.productsIds === 0)
-      //   return new GraphQLError("Shopping cart must include at least 1 item");
-
-      // Skapa ett unikt id + data objektet
       const newShoppingCart = {
-        // Generera ett random id (av typ UUID)
         id: crypto.randomUUID(),
+        itemsInCart: [],
+        totalSum: 0,
       };
 
-      // Skapa filePath för där vi ska skapa våran fil
       let filePath = path.join(
         shoppingCartsDirectory,
         `${newShoppingCart.id}.json`
       );
 
-      // Kolla att vårat auto-genererade newShoppingCartId inte har använts förut
+      // Check so id/file is unique
       let idExists = true;
       while (idExists) {
-        const exists = await fileExists(filePath); // kolla om filen existerar
+        const exists = await fileExists(filePath);
         console.log(exists, newShoppingCart.id);
-        // om filen redan existerar generera ett nytt newShoppingCartId och uppdatera filePath
+        // if id/file already exists:
         if (exists) {
           newShoppingCart.id = crypto.randomUUID();
           filePath = path.join(productsDirectory, `${newShoppingCart.id}.json`);
         }
-        // uppdatera idExists (för att undvika infinite loops)
+        // break loop
         idExists = exists;
       }
 
-      // Skapa en fil för nya ShoppingCarten i /data/ShoppingCarts
+      // create new file
       await fsPromises.writeFile(filePath, JSON.stringify(newShoppingCart));
 
-      // Return:a våran respons; vårat nyskapade ShoppingCart
       return newShoppingCart;
     },
 
-    // createShoppingCart: async (_, args) => {
-    //   // Verify name: om strängen är tom, return:a en error
-    //   if (args.productsIds === 0)
-    //     return new GraphQLError("Shopping cart must include at least 1 item");
+    deleteShoppingCart: async (_, args) => {
+      const shoppingCartId = args.shoppingCartId;
+      const shoppingCartFilePath = path.join(
+        shoppingCartsDirectory,
+        `${shoppingCartId}.json`
+      );
 
-    //   // Skapa ett unikt id + data objektet
-    //   const newShoppingCart = {
-    //     // Generera ett random id (av typ UUID)
-    //     id: crypto.randomUUID(),
-    //     items: args.items,
-    //     totalSum: args.totalSum,
-    //   };
+      // Check if exists
+      const shoppingCartExists = await fileExists(shoppingCartFilePath);
+      if (!shoppingCartExists)
+        return new GraphQLError(
+          "Sorry, there's been a mistake - that shoppingcart does not exist."
+        );
 
-    //   // Skapa filePath för där vi ska skapa våran fil
-    //   let filePath = path.join(
-    //     shoppingCartsDirectory,
-    //     `${newShoppingCart.id}.json`
-    //   );
+      // delete file
+      try {
+        await deleteFile(shoppingCartFilePath);
+      } catch (error) {
+        return {
+          deletedId: shoppingCartId,
+          success: false,
+        };
+      }
 
-    //   // Kolla att vårat auto-genererade newShoppingCartId inte har använts förut
-    //   let idExists = true;
-    //   while (idExists) {
-    //     const exists = await fileExists(filePath); // kolla om filen existerar
-    //     console.log(exists, newShoppingCart.id);
-    //     // om filen redan existerar generera ett nytt newShoppingCartId och uppdatera filePath
-    //     if (exists) {
-    //       newShoppingCart.id = crypto.randomUUID();
-    //       filePath = path.join(productsDirectory, `${newShoppingCart.id}.json`);
-    //     }
-    //     // uppdatera idExists (för att undvika infinite loops)
-    //     idExists = exists;
-    //   }
+      return {
+        deletedId: shoppingCartId,
+        success: true,
+      };
+    },
+    /*-------- + / - cartItems --------*/
 
-    //   // Skapa en fil för nya ShoppingCarten i /data/ShoppingCarts
-    //   await fsPromises.writeFile(filePath, JSON.stringify(newShoppingCart));
+    addCartItem: async (_, args) => {
+      const { shoppingCartId, productId } = args;
+      const shoppingCartFilePath = path.join(
+        shoppingCartsDirectory,
+        `${shoppingCartId}.json`
+      );
 
-    //   // Return:a våran respons; vårat nyskapade ShoppingCart
-    //   return newShoppingCart;
-    // },
+      // Check cart exists
+      const shoppingCartExists = await fileExists(shoppingCartFilePath);
+      if (!shoppingCartExists)
+        return new GraphQLError(
+          "Sorry, there's been a mistake - that shoppingcart does not exist."
+        );
+      const shoppingCartToUpdate = await readJsonFile(shoppingCartFilePath);
 
-    // addToShoppingCart: async (_, args) => {
-    //     return null;
-    //   },
+      // check if item exists (if yes:  quantity++)
+      let itemInCartExists = false;
+      for (let cartItem of shoppingCartToUpdate.itemsInCart) {
+        if (cartItem.id === productId) {
+          cartItem.quantity++;
+          itemInCartExists = true;
+          break;
+        }
+      }
+
+      // add new item
+      if (!itemInCartExists) {
+        const productFilePath = path.join(
+          productsDirectory,
+          `${productId}.json`
+        );
+
+        // (check product exists in directory)
+        const productExists = await fileExists(productFilePath);
+        if (!productExists)
+          return new GraphQLError(
+            "Sorry, that product doesn't exist in our directory."
+          );
+
+        //read product data and create data for new cartItem
+        const productToAdd = await readJsonFile(productFilePath);
+
+        const newCartItem = {
+          id: productToAdd.id,
+          name: productToAdd.name,
+          unitPrice: productToAdd.unitPrice,
+          quantity: 1,
+        };
+
+        //push new cartItem into shoppingCart
+        shoppingCartToUpdate.itemsInCart.push(newCartItem);
+      }
+
+      //update totalSum
+      let newSum = 0;
+      for (let cartItem of shoppingCartToUpdate.itemsInCart) {
+        newSum += cartItem.quantity * cartItem.unitPrice;
+      }
+      shoppingCartToUpdate.totalSum = newSum;
+
+      //update cart
+      await fsPromises.writeFile(
+        shoppingCartFilePath,
+        JSON.stringify(shoppingCartToUpdate)
+      );
+
+      return shoppingCartToUpdate;
+    },
+
+    removeCartItem: async (_, args) => {
+      const { shoppingCartId, cartItemId } = args;
+      const shoppingCartFilePath = path.join(
+        shoppingCartsDirectory,
+        `${shoppingCartId}.json`
+      );
+
+      // Check cart exists
+      const shoppingCartExists = await fileExists(shoppingCartFilePath);
+      if (!shoppingCartExists)
+        return new GraphQLError(
+          "Sorry, there's been a mistake - that shoppingcart does not exist."
+        );
+      const shoppingCartToUpdate = await readJsonFile(shoppingCartFilePath);
+
+      // check if item exists in cart (if yes: quantity-- or remove if 0)
+      let itemInCartExist = false;
+      for (let i = 0; i > shoppingCartToUpdate.itemsInCart.length; i++) {
+        if (shoppingCartToUpdate.itemsInCart[i].id === cartItemId) {
+          shoppingCartToUpdate.itemsInCart[i].quantity--;
+          itemInCartExist = true;
+          if (shoppingCartToUpdate.itemsInCart[i].quantity === 0) {
+            console.log(shoppingCartToUpdate.itemsInCart[i].quantity);
+            shoppingCartToUpdate.itemsInCart.splice(i, 1);
+          }
+        }
+      }
+      // item does not exist in cart
+      if (!itemInCartExist) {
+        return new GraphQLError(
+          "Sorry, that product is not in the shoppingcart."
+        );
+      }
+
+      //update totalSum
+      let sum = 0;
+      for (let cartItem of shoppingCartToUpdate.itemsInCart) {
+        sum += cartItem.quantity * cartItem.price;
+      }
+      shoppingCartToUpdate.totalSum = sum;
+
+      //update cart
+      await fsPromises.writeFile(
+        shoppingCartFilePath,
+        JSON.stringify(shoppingCartToUpdate)
+      );
+
+      return shoppingCartToUpdate;
+    },
+
+    emptyAllCartItems: async (_, args) => {
+      const { shoppingCartId } = args;
+      const shoppingCartFilePath = path.join(
+        shoppingCartsDirectory,
+        `${shoppingCartId}.json`
+      );
+
+      // Check cart exists
+      const shoppingCartExists = await fileExists(shoppingCartFilePath);
+      if (!shoppingCartExists)
+        return new GraphQLError(
+          "Sorry, there's been a mistake - that shoppingcart does not exist."
+        );
+
+      //empty existing cart of cartItems
+      const shoppingCartToUpdate = await readJsonFile(shoppingCartFilePath);
+      let emptyArray = [];
+      let totalSum = 0;
+
+      shoppingCartToUpdate.itemsInCart = emptyArray;
+      shoppingCartToUpdate.totalSum = totalSum;
+
+      //update cart:
+      await fsPromises.writeFile(
+        shoppingCartFilePath,
+        JSON.stringify(shoppingCartToUpdate)
+      );
+
+      return shoppingCartToUpdate;
+    },
   },
 };
