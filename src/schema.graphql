@@ -29,15 +29,9 @@ type Query {
 
   getShoppingCartById(shoppingCartId: ID!): ShoppingCart
   getAllShoppingCarts: [ShoppingCart]
-
-  # getCartItemById(cartItemID: ID!): CartItem
 }
 
 type Mutation {
-  createProduct(name: String!, description: String, unitPrice: Float!): Product
-  updateProduct(id: ID!, name: String!, unitPrice: Float!): Product
-  deleteProduct(productId: ID!): DeletedResourceResponse
-
   createNewShoppingCart: ShoppingCart
   deleteShoppingCart(shoppingCartId: ID!): DeletedResourceResponse
 
