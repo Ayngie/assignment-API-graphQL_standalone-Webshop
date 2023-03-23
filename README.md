@@ -1,6 +1,17 @@
-# Inlämningsuppgift #1 (API-Utveckling) - GraphQL Shopping Cart API
+# Webshop shopping cart - GrapghQl API
 
-## Mål med inlämningsuppgiften:
+## A short description 
+This was an assignment to build a graphQl API for a webshop shoppingcart.
+
+Course: API-utveckling, FED22S, Medieinstitutet Sthlm.
+
+## More info to come...
+
+---
+
+## Inlämningsuppgift #1 (API-Utveckling) - GraphQL Shopping Cart API
+
+### Mål med inlämningsuppgiften:
 
 Målet med uppgiften är att utvärdera dina kunskaper i följande lärandemål från kursplanen:
 ● Få in/ut data sparad på servern
@@ -8,13 +19,13 @@ Målet med uppgiften är att utvärdera dina kunskaper i följande lärandemål 
 
 Uppgiften utvärderar även dina kunskaper kring NodeJS och GraphQL
 
-## Metod för inlämning:
+### Metod för inlämning:
 
 Zippa ditt projekt och ladda upp på ItsLearning. Ladda INTE upp node_modules mappen.
 
 Datum: Lämnas in senast någon gång under måndagen den 6 februari, 2023
 
-## Beskrivning av uppgiften:
+### Beskrivning av uppgiften:
 
 Du skall skapa ett GraphQL API för en shopping cart med NodeJS och Apollo Server. Via
 API:et bör man kunna skicka requests för:
@@ -37,13 +48,13 @@ En produkt bör bestå av följande data:
 
 Använd JSON filer för att spara data på servern.
 
-## Betygskriterier för uppgiften:
+### Betygskriterier för uppgiften:
 
-### För G:
+#### För G:
 
 - Allt fungerar enligt ovanstående instruktioner med NodeJS version 18.12.1
 
-### För VG:
+#### För VG:
 
 - Bra kodkvalitet & logisk filstruktur i kodbasen
 - GraphQL API:et innehåller även följande funktionalitet:
