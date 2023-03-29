@@ -6,7 +6,7 @@ This was an assignment to build a graphQl API for a webshop shoppingcart.
 Course: API-utveckling, FED22S, Medieinstitutet Sthlm.
 
 ## Screenshot of project
-![GraphQL API](https://angelicareutersward.se/assets/graphqlWebshop/graphqlWebshop.png)
+![GraphQL API](https://angelicareutersward.se/assets/graphqlWebshop/GraphqlWebshop.png)
 
 ## Techniques used
 ![VSCode badge](https://img.shields.io/badge/VSCode-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white/to/img.png)
