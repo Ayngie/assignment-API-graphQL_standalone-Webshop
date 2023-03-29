@@ -1,22 +1,27 @@
-# Webshop shopping cart - GrapghQl API
+# GraphQL Webshop
 
 ## A short description 
-This was an assignment to build a graphQl API for a webshop shoppingcart.
+This was an assignment to build a graphQl apollo-server API for a webshop shoppingcart.
 
 Course: API-utveckling, FED22S, Medieinstitutet Sthlm.
+
+---
 
 ## Screenshot of project
 ![GraphQL API](https://angelicareutersward.se/Images/graphqlWebshop/GraphqlWebshop.png)
 
+---
+
 ## Techniques used
 ![VSCode badge](https://img.shields.io/badge/VSCode-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white/to/img.png)
 ![HTML5 badge](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white/to/img.png)
-![Sass badge](https://img.shields.io/badge/Sass-CC6699?style=for-the-badge&logo=sass&logoColor=white/to/img.png)
 ![JavaScript badge](https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E/to/img.png)
 ![GitHub badge](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white/to/img.png)
 ![Apollo GraphQL](https://img.shields.io/badge/Apollo%20GraphQL-311C87?&style=for-the-badge&logo=Apollo%20GraphQL&logoColor=white)
 ![GraphQL badge](https://img.shields.io/badge/GraphQl-E10098?style=for-the-badge&logo=graphql&logoColor=white)
 ![Prettier](https://img.shields.io/badge/prettier-1A2C34?style=for-the-badge&logo=prettier&logoColor=F7BA3E)
+
+---
 
 ## Run locally
 Clone the project
